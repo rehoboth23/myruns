@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:background="?android:attr/selectableItemBackground">
+    <TextView
+        android:id="@+id/entry_type_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/empty"
+        android:textSize="17.25sp"
+        android:textStyle="bold"
+        android:textColor="@color/textLabelColor"/>
+    <TextView
+        android:id="@+id/entry_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/empty"
+        android:textSize="15sp"
+        android:textColor="@color/textLabelColor"/>
+</LinearLayout>

@@ -1,0 +1,84 @@
+<resources>
+    <string name="app_name">MyRuns</string>
+    <string name="lab1">MyRuns1</string>
+    <string name="map_key" translatable="false">AIzaSyBDgcH9k0qsiVJyMFYnqYn9f0kyMvpQ2bY</string>
+    <!-- other stuff -->
+    <string name="empty" />
+    <string name="save">SAVE</string>
+    <string name="delete">DELETE</string>
+
+
+    <!--    name hint and label-->
+    <string name="name_hint">Your Name</string>
+    <string name="name_label">Name</string>
+
+    <!--    email hint and label-->
+    <string name="email_hint">Your Email</string>
+    <string name="email_label">Email</string>
+
+    <!--    number hint and label-->
+    <string name="number_hint">Your Phone Number</string>
+    <string name="number_label">Phone</string>
+
+    <!--    gender hint and label-->
+    <string name="gender_hint">Gender</string>
+    <string name="gender_label">Gender</string>
+
+    <!--    class year hint and label-->
+    <string name="class_year_hint">eg. 2023</string>
+    <string name="class_year_label">Class</string>
+
+    <!--    major hint and label-->
+    <string name="majorHint">Your Major</string>
+    <string name="majorLabel">Major</string>
+
+    <!--    gender options-->
+    <string name="male_gender">Male</string>
+    <string name="female_gender">Female</string>
+
+    <!--    defining sample menu item-->
+    <string name="settings">Settings</string>
+
+    <!--    image view-->
+    <string name="profile_pic_label">Profile Photo</string>
+    <string name="image_des">profile image</string>
+    <string name="change_image">CHANGE</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- start fragmnt-->
+    <string name="input_type">Input Type</string>
+    <string name="activity_type">Activity Type</string>
+    <string name="start_button_text">START</string>
+    <string name="sync_button_text">SYNC</string>
+
+    <!--settings fragment-->
+    <string name="account_preferences">Account Preferences</string>
+    <string name="additional_settings">Additional Settings</string>
+    <string name="misc">Misc.</string>
+    <string name="user_profile_label">Name, Email, Class, etc.</string>
+    <string name="user_profile_hint">User Profile</string>
+    <string name="privacy_setting_label">Privacy Settings</string>
+    <string name="privacy_setting_hint">Post your records anonymously</string>
+    <string name="unit_preferences_label">Unit Preferences</string>
+    <string name="unit_preferences_hint">Select the units</string>
+    <string name="comments_label">Comments</string>
+    <string name="comments_hint">Please enter your comments</string>
+    <string name="webpage_label">Webpage</string>
+    <string name="webpage_link">http://web.cs.dartmouth.edu/</string>
+    <string name="unit_preference_dialog">Unit Preferences</string>
+    <string name="metric_btn_label">Metric (Kilometers)</string>
+    <string name="imperial_btn_label">Imperial (Miles)</string>
+    <string name="title_activity_manual_input">ManualInputActivity</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
+
+    <!-- image change dialog-->
+    <string name="imgChangeLabel">Pick Profile Picture</string>
+    <string name="openCamera">Open Camera</string>
+    <string name="selectImage">Select From Gallery</string>
+
+</resources>

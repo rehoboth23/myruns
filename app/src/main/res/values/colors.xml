@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#DF9090</color>
+    <color name="colorPrimaryDark">#DF9090</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="textColor">#000000</color>
+    <color name="textLabelColor">#6A6A6A</color>
+    <color name="actionTitleTextColor">#FFFFFF</color>
+    <color name="inputErrorColor">#EC0C0C</color>
+</resources>

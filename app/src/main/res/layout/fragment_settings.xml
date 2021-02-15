@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".SettingsFragment">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <!-- user profile-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/account_preferences"
+            android:textColor="@color/colorAccent"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="20dp" />
+        <LinearLayout
+            android:id="@+id/user_profile_clickable"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/user_profile_label"
+                android:textColor="@color/textColor"
+                android:textSize="17.25sp"
+                android:layout_marginStart="10dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/user_profile_hint"
+                android:textColor="@color/textLabelColor"
+                android:layout_marginStart="10dp"/>
+        </LinearLayout>
+
+        <!-- divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/textLabelColor" />
+        <!-- divider -->
+
+        <!-- privacy setting -->
+        <LinearLayout
+            android:id="@+id/anonymous_setting_clickable"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:longClickable="true"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/privacy_setting_label"
+                android:textColor="@color/textColor"
+                android:textSize="17.25sp"
+                android:layout_marginStart="10dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="25"
+                android:layout_marginStart="10dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/privacy_setting_hint"
+                    android:textColor="@color/textLabelColor"
+                    android:layout_weight="23.75"/>
+                <CheckBox
+                    android:id="@+id/privacy_setting_checkbox"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+        </LinearLayout>
+        <!-- additional settings -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/additional_settings"
+            android:textColor="@color/colorAccent"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="20dp" />
+        <LinearLayout
+            android:id="@+id/unit_preferences_clickable"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:longClickable="true"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/unit_preferences_label"
+                android:textColor="@color/textColor"
+                android:textSize="17.25sp"
+                android:layout_marginStart="10dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/unit_preferences_hint"
+                android:textColor="@color/textLabelColor"
+                android:layout_marginStart="10dp"/>
+        </LinearLayout>
+
+        <!-- divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/textLabelColor" />
+        <!-- divider -->
+
+        <!-- comments -->
+        <LinearLayout
+            android:id="@+id/comments_clickable"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:longClickable="true"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/comments_label"
+                android:textColor="@color/textColor"
+                android:textSize="17.25sp"
+                android:layout_marginStart="10dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/comments_hint"
+                android:textColor="@color/textLabelColor"
+                android:layout_marginStart="10dp"/>
+        </LinearLayout>
+        <!-- misc -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/misc"
+            android:textColor="@color/colorAccent"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="20dp"/>
+        <LinearLayout
+            android:id="@+id/webpage_clickable"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:longClickable="true"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/webpage_label"
+                android:textColor="@color/textColor"
+                android:textSize="17.25sp"
+                android:layout_marginStart="10dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/webpage_link"
+                android:textColor="@color/textLabelColor"
+                android:layout_marginStart="10dp"/>
+        </LinearLayout>
+
+        <!-- divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/textLabelColor" />
+        <!-- divider -->
+
+    </LinearLayout>
+</ScrollView>

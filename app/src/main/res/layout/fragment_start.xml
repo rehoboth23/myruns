@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".StartFragment">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <!-- INPUT TYPE-->
+        <TextView
+            android:id="@+id/input_type_label"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="@string/input_type"
+            android:textColor="@color/textLabelColor"/>
+        <Spinner
+            android:id="@+id/input_type_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"/>
+
+        <!-- ACTIVITY TYPE-->
+        <TextView
+            android:id="@+id/activity_type_label"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="@string/activity_type"
+            android:textColor="@color/textLabelColor"/>
+        <Spinner
+            android:id="@+id/activity_type_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"/>
+
+        <!-- START AND SYNC BUTTONS-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginTop="100dp"
+            android:orientation="vertical">
+            <Button
+                android:id="@+id/start_button"
+                android:layout_width="370dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/start_button_text"/>
+            <Button
+                android:id="@+id/sync_button"
+                android:layout_width="370dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:text="@string/sync_button_text"/>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
