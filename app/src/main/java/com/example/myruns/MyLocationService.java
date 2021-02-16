@@ -1,7 +1,6 @@
 package com.example.myruns;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -16,9 +15,9 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
@@ -27,12 +26,27 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MyLocationService extends Service {
     GpsInputActivity.MyHandler handler;
+    Timer timer;
+    int seconds;
+    Calendar c;
+
+    private class SecondCount extends TimerTask {
+        @Override
+        public void run() {
+            seconds += 1;
+            timer.schedule(new SecondCount(), 1000);
+        }
+    }
 
     public class MyBinder extends Binder {
         public void setHandler(GpsInputActivity.MyHandler h) {
-            System.out.println("inside");
             handler = h;
         }
 
@@ -43,26 +57,48 @@ public class MyLocationService extends Service {
         public void stopRequests() {
             stopLocationService();
         }
+
+        public Calendar getCalendar() {
+            return c;
+        }
+
+        public int getTimeElapsed() {
+            return seconds/60;
+        }
     }
 
-    private LocationCallback locationCallback = new LocationCallback() {
+    private final LocationCallback locationCallback = new LocationCallback() {
 
         @Override
         public void onLocationResult(LocationResult locationResult) {
             if (locationResult != null) {
                 Location location = locationResult.getLastLocation();
-                double lgt = location.getLongitude(), ltd = location.getLatitude();
+
+                double lgt = location.getLongitude(),
+                        ltd = location.getLatitude(),
+                        alt = location.getAltitude(),
+                        speed = location.getSpeed();
 
                 Bundle bundle = new Bundle();
                 bundle.putDouble(CodeKeys.LGT_KEY, lgt);
                 bundle.putDouble(CodeKeys.LTD_KEY, ltd);
+                bundle.putDouble(CodeKeys.ALT_KEY, alt);
+                bundle.putDouble(CodeKeys.SPEED_KEY, speed);
 
                 Message msg = handler.obtainMessage();
                 msg.setData(bundle);
+                msg.what = CodeKeys.SERVICE_LOCATION_MSG;
                 handler.sendMessage(msg);
             }
         }
     };
+
+    @RequiresApi(api = Build.VERSION_CODES.P)
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        timer = new Timer();
+    }
 
     @Nullable
     @Override
@@ -108,6 +144,16 @@ public class MyLocationService extends Service {
                 .requestLocationUpdates(request, locationCallback, Looper.getMainLooper());
 
         startForeground(CodeKeys.LOCATION_SERVICE_CODE, builder.build());
+        timer.schedule(new SecondCount(), 1000);
+        LocalDateTime time = LocalDateTime.now();
+
+        c = Calendar.getInstance();
+        c.set(Calendar.YEAR, time.getYear());
+        c.set(Calendar.MONTH, time.getMonthValue());
+        c.set(Calendar.DAY_OF_MONTH, time.getDayOfMonth());
+        c.set(Calendar.HOUR_OF_DAY, time.getHour());
+        c.set(Calendar.MINUTE, time.getMinute());
+        c.set(Calendar.SECOND, 0);
     }
 
     public void stopLocationService() {

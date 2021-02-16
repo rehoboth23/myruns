@@ -2,6 +2,7 @@ package com.example.myruns;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ public class StartFragment extends Fragment {
     private Context context;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_start, container, false);
         context = getContext();
@@ -44,32 +46,42 @@ public class StartFragment extends Fragment {
 
                 // get spinner and get spinner value
                 Spinner inputTypeSpinner = view.findViewById(R.id.input_type_spinner);
-                String inputType = inputTypeSpinner.getSelectedItem().toString();
+                String inputType = inputTypeSpinner.getSelectedItem().toString().toLowerCase();
 
-                switch (inputType.toLowerCase()) {
-                    case "manual entry":
-                        Intent manualInputIntent = new Intent(context, ManualEntryActivity.class);
+                if (inputType.equals("manual entry")) {
+                    Intent manualInputIntent = new Intent(getActivity(), ManualEntryActivity.class);
+                    // add activity type to intent
+                    manualInputIntent.putExtra("activity_type",
+                            activityTypeSpinner.getSelectedItem().toString());
+
+                    startActivity(manualInputIntent);
+                } else {
+                    Intent gpsInputIntent = new Intent(getActivity(), GpsInputActivity.class);
+
+                    if (inputType.equals("automatic")) {
                         // add activity type to intent
-                        manualInputIntent.putExtra("activity_type",
-                                activityTypeSpinner.getSelectedItem().toString());
-                        startActivity(manualInputIntent);
-                        break;
-                    case "gps":
-                        Intent gpsInputIntent = new Intent(context, GpsInputActivity.class);
+                        gpsInputIntent.putExtra("entry_type", "Automatic");
+
+                        // add activity type to intent
+                        gpsInputIntent.putExtra("activity_type",
+                                "Unknown");
+
+                    } else {
                         // add activity type to intent
                         gpsInputIntent.putExtra("activity_type",
                                 activityTypeSpinner.getSelectedItem().toString());
-                        startActivity(gpsInputIntent);
-                        break;
-                    case "automatic":
-                        Intent automaticInputIntent = new Intent(context, AutomaticInputActivity.class);
+
                         // add activity type to intent
-                        automaticInputIntent.putExtra("activity_type",
-                                activityTypeSpinner.getSelectedItem().toString());
-                        startActivity(automaticInputIntent);
-                        break;
-                    default:
-                        break;
+                        gpsInputIntent.putExtra("entry_type", "GPS");
+                    }
+
+                    // discard any lingering prefs
+                    SharedPreferences prefs = context.getSharedPreferences(CodeKeys.GPS_PREFS, Context.MODE_PRIVATE);
+                    SharedPreferences.Editor edit = prefs.edit();
+                    edit.remove(CodeKeys.PREV_LOC);
+                    edit.apply();
+
+                    startActivity(gpsInputIntent);
                 }
             }
 

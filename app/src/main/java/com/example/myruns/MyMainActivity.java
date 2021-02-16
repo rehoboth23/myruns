@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
@@ -141,7 +143,7 @@ public class MyMainActivity extends AppCompatActivity {
 
     // comments dialog fragment
     public static class CommentsDialog extends DialogFragment {
-        private String COMMENT_TEXT = "comments_text";
+        private final String COMMENT_TEXT = "comments_text";
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState){
@@ -217,10 +219,13 @@ public class MyMainActivity extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_main);
+
+        if (Util.checkPermission(this)) Util.requestPermissions(this);
 
         // retrieve views
         TabLayout tabLayout = findViewById(R.id.tab_layout);
@@ -258,11 +263,10 @@ public class MyMainActivity extends AppCompatActivity {
         boolean dbChange = entry_prefs.getBoolean("DB_UPDATED", false);
 
         if(dbChange) {
-            HistoryFragment fragment = (HistoryFragment) pagerAdapter.getItem(1);
-            fragment.setListAdapter();
             SharedPreferences.Editor edit = entry_prefs.edit();
             edit.remove("DB_UPDATED");
             edit.apply();
+            recreate();
         }
     }
 

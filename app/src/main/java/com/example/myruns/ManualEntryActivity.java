@@ -33,9 +33,9 @@ import java.util.Objects;
 public class ManualEntryActivity extends AppCompatActivity {
 
     private final class ManualInputAdapter extends ArrayAdapter<String> {
-        private Context context;
-        private int resource;
-        private String[] labels;
+        private final Context context;
+        private final int resource;
+        private final String[] labels;
 
         public ManualInputAdapter(@NonNull final Context context, int resource, @NonNull String[] objects) {
             super(context, resource, objects);
@@ -88,7 +88,7 @@ public class ManualEntryActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             try {
-                                db.addOne(entry);
+                                db.addManualEntry(entry);
 
                                 // indicate that the data source has been updated
                                 SharedPreferences.Editor edit = preferences.edit();

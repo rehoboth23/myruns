@@ -19,13 +19,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class EntryActivity extends AppCompatActivity {
+public class MEntryActivity extends AppCompatActivity {
 
     private static class EntryAdapter extends ArrayAdapter<String> {
         Context context;
         int resource;
         String[] objects;
-        private String[] labels = {"Input Type", "Activity Type", "Date and Time", "Duration",
+        private final String[] labels = {"Input Type", "Activity Type", "Date and Time", "Duration",
                                     "Distance", "Calories", "HeartRate"};
         public EntryAdapter(@NonNull Context context, int resource, @NonNull String[] objects) {
             super(context, resource, objects);
@@ -55,6 +55,7 @@ public class EntryActivity extends AppCompatActivity {
     }
 
     int id;
+    String entryType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,14 +64,18 @@ public class EntryActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         assert bundle != null;
-        String[] info = {bundle.getString("entryType"),
+
+        entryType = bundle.getString("entryType");
+        id = bundle.getInt("id");
+
+        String[] info = {entryType,
                          bundle.getString("activityType"),
                          bundle.getString("timestamp"),
                          bundle.getString("duration"),
                          bundle.getString("distance"),
                          bundle.getString("calories"),
                          bundle.getString("heartRate")};
-        id = bundle.getInt("id");
+
         ListView lv = findViewById(R.id.entry_list_view);
         EntryAdapter entryAdapter = new EntryAdapter(getApplicationContext(), R.layout.layout_entry_item, info);
         lv.setDivider(null);
@@ -88,8 +93,7 @@ public class EntryActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 if(id != -1) {
                     DataBaseUtil util = new DataBaseUtil(getApplicationContext());
-                    util.deleteEntry(id);
-
+                    util.deleteEntry(id, entryType);
                     finish();
                 }
                 SharedPreferences preferences = getSharedPreferences(CodeKeys.MANUAL_INPUT_PREFS, MODE_PRIVATE);

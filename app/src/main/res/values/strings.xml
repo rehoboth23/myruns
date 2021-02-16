@@ -80,5 +80,6 @@
     <string name="imgChangeLabel">Pick Profile Picture</string>
     <string name="openCamera">Open Camera</string>
     <string name="selectImage">Select From Gallery</string>
+    <string name="_0">0</string>
 
 </resources>

@@ -13,14 +13,13 @@ import java.util.Calendar;
 import java.util.List;
 
 public class DataBaseUtil extends SQLiteOpenHelper {
+
     private final String ENTRY_TABLE = "ENTRY", ENTRY_TYPE = "entry_type",
                          ACTIVITY_TYPE = "activity_type", COMMENT = "comment",
                          DISTANCE = "distance", DURATION = "duration",
                          CALORIES = "calories", HEART_RATE = "heart_rate",
                          ENTRY_TIME_STAMP = "time_stamp";
     Context mContext;
-
-
 
 
 
@@ -38,11 +37,11 @@ public class DataBaseUtil extends SQLiteOpenHelper {
                                 ENTRY_TYPE + " text(13) not null,"+
                                 ACTIVITY_TYPE + " text(21) not null,"+
                                 COMMENT +" text(200),"+
-                                DISTANCE + " decimal(4, 2) not null,"+
-                                DURATION + " decimal(4, 2) not null,"+
+                                DISTANCE + " decimal(6, 2) not null,"+
+                                DURATION + " decimal(6, 2) not null,"+
                                 CALORIES +  " int,"+
                                 HEART_RATE + " int,"+
-                                ENTRY_TIME_STAMP + " text(22));";
+                                ENTRY_TIME_STAMP + " text(22) not null);";
 
         // execute create statement
         db.execSQL(createStatement);
@@ -53,7 +52,7 @@ public class DataBaseUtil extends SQLiteOpenHelper {
 
     }
 
-    public void addOne(Entry entry) {
+    public void addManualEntry(Entry entry) {
         // get writable
 
         // set content values
@@ -80,6 +79,39 @@ public class DataBaseUtil extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void addGpsEntry(Entry entry) {
+        // set content values
+        final ContentValues cv = new ContentValues();
+        cv.put(ENTRY_TYPE, entry.getEntryType());
+        cv.put(ACTIVITY_TYPE, entry.getActivityType());
+        cv.put(COMMENT, entry.getComment());
+        cv.put(DISTANCE, entry.getImperialDistance());
+        cv.put(DURATION, entry.getDurationInMinutes());
+        cv.put(CALORIES, entry.getCalories());
+        cv.put(HEART_RATE, entry.getHeartRate());
+
+        // format and put date; format and add start time; use dateString and startTimeString to format a time stamp
+
+        Calendar c = entry.getTimeStamp();
+        String dateString = c.get(Calendar.YEAR) + "-" + c.get(Calendar.MONTH) + "-" + c.get(Calendar.DAY_OF_MONTH);
+        String startTimeString = c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE) + ":" + c.get(Calendar.SECOND);
+        String timeStamp = dateString + " " + startTimeString;
+
+        cv.put(ENTRY_TIME_STAMP, timeStamp);
+
+        SQLiteDatabase db = getWritableDatabase();
+        long entry_id = db.insert(ENTRY_TABLE, null, cv);
+        db.close();
+
+        if (entry_id != -1) {
+            LocationDataBase ldb = new LocationDataBase(mContext);
+            for (double[] l: entry.getLocations()) {
+                ldb.makeLocation(l, entry_id);
+            }
+            ldb.close();
+        }
+    }
+
     public List<Entry> getEntries() {
         List<Entry> entries = new ArrayList<>();
 
@@ -87,10 +119,10 @@ public class DataBaseUtil extends SQLiteOpenHelper {
         String selectQuery = "SELECT * FROM " + ENTRY_TABLE;
 
         // get readable database; run query on data base
-        SQLiteDatabase db = getReadableDatabase();
+        SQLiteDatabase dbs = getReadableDatabase();
 
         // make cursor to ?
-        Cursor cursor = db.rawQuery(selectQuery, null);
+        Cursor cursor = dbs.rawQuery(selectQuery, null);
 
         if(cursor.moveToFirst()) {
             do {
@@ -124,16 +156,24 @@ public class DataBaseUtil extends SQLiteOpenHelper {
 
                 entry.setId(cursor.getInt(0));
 
+                if (!entry.getEntryType().equals("Manual Entry")) {
+                    LocationDataBase ldb = new LocationDataBase(mContext);
+                    ArrayList<double[]> locations = ldb.getLocations(entry.getId());
+                    ldb.close();
+                    entry.setLocations(locations);
+                }
+
                 entries.add(entry);
+
             } while(cursor.moveToNext());
         }
         cursor.close();
-        db.close();
+        dbs.close();
 
         return entries;
     }
 
-    public void deleteEntry(final int id) {
+    public void deleteEntry(final int id, final String entryType) {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -141,6 +181,12 @@ public class DataBaseUtil extends SQLiteOpenHelper {
                     String whereClause = "id=?";
                     String[] whereArgs = {id+""};
                     db.delete(ENTRY_TABLE, whereClause, whereArgs);
+
+                    if(!entryType.equals("Manual Entry")) {
+                        LocationDataBase ldb = new LocationDataBase(mContext);
+                        ldb.delete(id, false);
+                        ldb.close();
+                    }
                 }
                 catch (Exception e) {
                     e.printStackTrace();
