@@ -1,6 +1,7 @@
 package com.example.myruns;
 
 import android.Manifest;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -16,6 +17,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
@@ -70,26 +72,24 @@ public class MyLocationService extends Service {
     private final LocationCallback locationCallback = new LocationCallback() {
 
         @Override
-        public void onLocationResult(LocationResult locationResult) {
-            if (locationResult != null) {
-                Location location = locationResult.getLastLocation();
+        public void onLocationResult(@NonNull LocationResult locationResult) {
+            Location location = locationResult.getLastLocation();
 
-                double lgt = location.getLongitude(),
-                        ltd = location.getLatitude(),
-                        alt = location.getAltitude(),
-                        speed = location.getSpeed();
+            double lgt = location.getLongitude(),
+                    ltd = location.getLatitude(),
+                    alt = location.getAltitude(),
+                    speed = location.getSpeed();
 
-                Bundle bundle = new Bundle();
-                bundle.putDouble(CodeKeys.LGT_KEY, lgt);
-                bundle.putDouble(CodeKeys.LTD_KEY, ltd);
-                bundle.putDouble(CodeKeys.ALT_KEY, alt);
-                bundle.putDouble(CodeKeys.SPEED_KEY, speed);
+            Bundle bundle = new Bundle();
+            bundle.putDouble(CodeKeys.LGT_KEY, lgt);
+            bundle.putDouble(CodeKeys.LTD_KEY, ltd);
+            bundle.putDouble(CodeKeys.ALT_KEY, alt);
+            bundle.putDouble(CodeKeys.SPEED_KEY, speed);
 
-                Message msg = handler.obtainMessage();
-                msg.setData(bundle);
-                msg.what = CodeKeys.SERVICE_LOCATION_MSG;
-                handler.sendMessage(msg);
-            }
+            Message msg = handler.obtainMessage();
+            msg.setData(bundle);
+            msg.what = CodeKeys.SERVICE_LOCATION_MSG;
+            handler.sendMessage(msg);
         }
     };
 
@@ -107,18 +107,24 @@ public class MyLocationService extends Service {
     }
 
     public void startLocationService() {
-        Intent resultIntent = new Intent();
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         String channelId = "location_notification_channel";
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
 
-        builder.setSmallIcon(R.mipmap.ic_launcher);
+        // make content intent for the notification
+        Intent resultIntent = new Intent(this, GpsInputActivity.class);
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // set content intent for the notification
+        builder.setContentIntent(contentIntent);
+
+
+        builder.setSmallIcon(R.drawable.mapd);
         builder.setContentTitle("Location Service");
         builder.setDefaults(NotificationCompat.DEFAULT_ALL);
         builder.setContentText("Running");
-        builder.setContentIntent(pendingIntent);
         builder.setAutoCancel(false);
         builder.setPriority(NotificationCompat.PRIORITY_MAX);
 
@@ -130,7 +136,7 @@ public class MyLocationService extends Service {
             }
         }
 
-        LocationRequest request = new LocationRequest();
+        LocationRequest request = LocationRequest.create();
         request.setInterval(4000);
         request.setFastestInterval(2000);
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -143,7 +149,9 @@ public class MyLocationService extends Service {
         LocationServices.getFusedLocationProviderClient(this)
                 .requestLocationUpdates(request, locationCallback, Looper.getMainLooper());
 
-        startForeground(CodeKeys.LOCATION_SERVICE_CODE, builder.build());
+        Notification notification = builder.build();
+        startForeground(CodeKeys.LOCATION_SERVICE_CODE, notification);
+
         timer.schedule(new SecondCount(), 1000);
         LocalDateTime time = LocalDateTime.now();
 

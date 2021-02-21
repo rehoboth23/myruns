@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -54,6 +55,13 @@ public class GpsInputActivity extends AppCompatActivity implements OnMapReadyCal
                addLocation(lgt, ltd, alt, speed, false);
 
            }
+
+           if (msg.what == CodeKeys.SENSOR_SERVICE_MSG) {
+               activityType = bundle.getString(CodeKeys.CLASS_ACT_KEY);
+               TextView t = findViewById(R.id.activity_type_label);
+               String type = "Type: " + activityType;
+               t.setText(type);
+           }
         }
     }
 
@@ -63,13 +71,13 @@ public class GpsInputActivity extends AppCompatActivity implements OnMapReadyCal
     ArrayList<double[]> locations;
     MyHandler handler;
     MyLocationService.MyBinder binder;
+    SensorClassifierService.SensorBinder sBinder;
     SharedPreferences prefs;
     boolean discard = false;
     String activityType, entryType, unitType, perHour;
     TextView activity, avgSpeed, curSpeed, climb, calories, distance;
     double totalDistance, speedSum, totalClimb;
     int calorieCount;
-
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
@@ -159,8 +167,9 @@ public class GpsInputActivity extends AppCompatActivity implements OnMapReadyCal
             options.position(latLng);
             options.title("Start Point");
             map.addMarker(options);
+
         }
-        retrieveLocations();
+        retrievePrefs();
     }
 
     @Override
@@ -184,6 +193,12 @@ public class GpsInputActivity extends AppCompatActivity implements OnMapReadyCal
             }
             SharedPreferences.Editor edit = prefs.edit();
             edit.putStringSet(CodeKeys.PREV_LOC, locSet);
+            if (map != null) {
+                edit.putFloat(CodeKeys.GPS_ZOOM, map.getCameraPosition().zoom);
+            }
+            if(entryType.equals("Automatic")) {
+                edit.putString(CodeKeys.ACT_TYPE_KEY, activityType);
+            }
             edit.apply();
         } else {
             discardPrefs();
@@ -192,9 +207,17 @@ public class GpsInputActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        binder = (MyLocationService.MyBinder) service;
-        binder.setHandler(handler);
-        binder.startRequests();
+        Log.d("Component Name", name.getShortClassName());
+        if (name.getShortClassName().equals(".MyLocationService")) {
+            binder = (MyLocationService.MyBinder) service;
+            binder.setHandler(handler);
+            binder.startRequests();
+        } else if (name.getShortClassName().equals(".SensorClassifierService")) {
+            sBinder = (SensorClassifierService.SensorBinder) service;
+            sBinder.start();
+            sBinder.setHandler(handler);
+        }
+
     }
 
     @Override
@@ -202,6 +225,7 @@ public class GpsInputActivity extends AppCompatActivity implements OnMapReadyCal
 
     }
     public void unBindMe() {
+        if(sBinder != null) sBinder.stop();
         binder.stopRequests();
         mActivity.getApplicationContext().unbindService(this);
     }
@@ -221,7 +245,13 @@ public class GpsInputActivity extends AppCompatActivity implements OnMapReadyCal
         polyline.add(l2);
         map.addPolyline(polyline);
         map.animateCamera(CameraUpdateFactory.newLatLng(l2));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(l2, 17));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(l2,
+                prefs.getFloat(CodeKeys.GPS_ZOOM, map.getCameraPosition().zoom)));
+        if (prefs.contains(CodeKeys.GPS_ZOOM)) {
+            SharedPreferences.Editor edit = prefs.edit();
+            edit.remove(CodeKeys.GPS_ZOOM);
+            edit.apply();
+        }
     }
 
     public void addLocation(final double lgt, final double ltd, final double alt, final double speed, boolean isAll) {
@@ -247,7 +277,7 @@ public class GpsInputActivity extends AppCompatActivity implements OnMapReadyCal
         makeSpeedDistance(isAll);
     }
 
-    public void retrieveLocations() {
+    public void retrievePrefs() {
         Set<String> prevLocations = prefs.getStringSet(CodeKeys.PREV_LOC, null);
         if (prevLocations != null) {
             for (String l: prevLocations) {
@@ -259,6 +289,8 @@ public class GpsInputActivity extends AppCompatActivity implements OnMapReadyCal
                 addLocation(lgt, ltd, alt, speed, true);
             }
         }
+
+        activityType = prefs.getString(CodeKeys.ACT_TYPE_KEY, activityType);
     }
 
     public void makeSpeedDistance(final boolean isAll) {
@@ -337,14 +369,23 @@ public class GpsInputActivity extends AppCompatActivity implements OnMapReadyCal
     public void discardPrefs() {
         SharedPreferences.Editor edit = prefs.edit();
         edit.remove(CodeKeys.PREV_LOC);
+        edit.remove(CodeKeys.ACT_TYPE_KEY);
+        edit.putFloat(CodeKeys.GPS_ZOOM, 17);
         edit.apply();
     }
 
     public void startListening() {
         // start location service
-        Intent serviceIntent = new Intent(mActivity, MyLocationService.class);
-        startService(serviceIntent);
-        mActivity.getApplicationContext().bindService(serviceIntent, this, BIND_AUTO_CREATE);
+        Intent locationServiceIntent = new Intent(mActivity, MyLocationService.class);
+        startService(locationServiceIntent);
+        getApplicationContext().bindService(locationServiceIntent, this, BIND_AUTO_CREATE);
+
+        // start sensor service
+        if (entryType.equals("Automatic")) {
+            Intent sensorServiceIntent = new Intent(mActivity, SensorClassifierService.class);
+            startService(sensorServiceIntent);
+            mActivity.getApplicationContext().bindService(sensorServiceIntent, this, BIND_AUTO_CREATE);
+        }
     }
 
     public void saveActivity() {
@@ -354,6 +395,10 @@ public class GpsInputActivity extends AppCompatActivity implements OnMapReadyCal
             public void run() {
                 Calendar timestamp = binder.getCalendar();
                 int duration = binder.getTimeElapsed();
+
+                if (entryType.equals("Automatic")) {
+                    activityType = sBinder.getPredictedActivity();
+                }
 
                 Entry newEntry = new Entry (entryType, activityType, locations, (float) totalDistance, duration, timestamp, calorieCount);
 

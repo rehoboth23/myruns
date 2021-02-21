@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,6 +32,7 @@ public class MapEntryActivity extends AppCompatActivity implements OnMapReadyCal
     int id, unit;
     GoogleMap map;
     ArrayList<LatLng> mLocations;
+    Float zoomLevel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,6 +41,10 @@ public class MapEntryActivity extends AppCompatActivity implements OnMapReadyCal
 
         Bundle bundle = getIntent().getExtras();
         assert bundle != null;
+
+        if (savedInstanceState != null) {
+            zoomLevel = savedInstanceState.getFloat(CodeKeys.MAP_ZOOM, 17f);
+        } else zoomLevel = 17f;
 
         activityType = bundle.getString("activityType");
         id = bundle.getInt("id");
@@ -90,6 +96,19 @@ public class MapEntryActivity extends AppCompatActivity implements OnMapReadyCal
         return true;
     }
 
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putFloat(CodeKeys.MAP_ZOOM, map.getCameraPosition().zoom);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        zoomLevel = savedInstanceState.getFloat(CodeKeys.MAP_ZOOM, 17);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -105,7 +124,7 @@ public class MapEntryActivity extends AppCompatActivity implements OnMapReadyCal
                 }
             } else {
                 map.animateCamera(CameraUpdateFactory.newLatLng(mLocations.get(0)));
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocations.get(0),17));
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(mLocations.get(0),zoomLevel));
             }
 
             // start point marker
@@ -202,6 +221,6 @@ public class MapEntryActivity extends AppCompatActivity implements OnMapReadyCal
         polyline.add(l2);
         map.addPolyline(polyline);
         map.animateCamera(CameraUpdateFactory.newLatLng(l2));
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(l2,17));
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(l2,zoomLevel));
     }
 }

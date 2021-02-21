@@ -1,11 +1,13 @@
 package com.example.myruns;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
@@ -43,6 +46,7 @@ public class ProfileActivity extends AppCompatActivity {
     private RadioGroup gender;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -135,6 +139,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     // change image
+    @RequiresApi(api = Build.VERSION_CODES.P)
     public void changeImage(View v) {
         // get permissions set
         if(Util.checkPermission(this)) Util.requestPermissions(this);
@@ -165,6 +170,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         view.findViewById(R.id.take_picture).setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("QueryPermissionsNeeded")
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
@@ -200,6 +206,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     // save profile
+    @RequiresApi(api = Build.VERSION_CODES.P)
     public void profileSave(View view) throws FileNotFoundException {
         // get permissions set
         if(Util.checkPermission(this)) Util.requestPermissions(this);
@@ -239,6 +246,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     // clean out changes and reset to original
+    @RequiresApi(api = Build.VERSION_CODES.P)
     public void profileCancel(View view) {
         // get permissions set
         if(Util.checkPermission(this)) Util.requestPermissions(this);

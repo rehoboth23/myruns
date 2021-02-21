@@ -82,4 +82,13 @@
     <string name="selectImage">Select From Gallery</string>
     <string name="_0">0</string>
 
+    <!-- data collector stuff-->
+    <string name="ui_collector_toast_file_deleted">All files deleted.</string>
+    <string name="ui_sensor_service_notification_ticker">Collector started recording.</string>
+    <string name="ui_sensor_service_notification_title">MyRuns Collector</string>
+    <string name="ui_sensor_service_notification_content">Recording your activity data</string>
+    <string name="ui_sensor_service_toast_success_file_updated">Data file updated.</string>
+    <string name="ui_sensor_service_toast_success_file_created">Data file created.</string>
+    <string name="ui_sensor_service_toast_error_file_saving_failed">Failed saving the file. Check your storage.</string>
+
 </resources>
